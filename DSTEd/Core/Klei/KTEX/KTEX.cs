@@ -141,7 +141,7 @@ namespace DSTEd.Core.Klei.KTEX {
                     byte g = imgReader.ReadByte();
                     byte b = imgReader.ReadByte();
                     byte a = imgReader.ReadByte();
-                    pt.SetPixel(x, y, Color.FromArgb(a, r, g, b));
+                    pt.SetPixel(x, mipmap.Height-y-1, Color.FromArgb(a, r, g, b));
                 }
                 //if (OnProgressUpdate != null) {
                 //OnProgressUpdate(y * 100 / mipmap.Height);
