@@ -93,6 +93,27 @@ namespace DSTEd.Core {
             return existing;
         }
 
+		public void ConvertDocument(string filepath)//most situlations
+		{
+			ConvertDocument(filepath, System.Text.Encoding.GetEncoding(0));
+		}
+
+		public void ConvertDocument(string filepath,System.Text.Encoding SourceEncoding)
+		{
+			if(ExistingDocument(filepath))
+			{
+				byte[] buff = { 0 };
+				var fs = new FileStream(filepath, FileMode.Open);
+				fs.Read(buff, 0, (int)fs.Length);
+				fs.Dispose();
+				var u8 = System.Text.Encoding.Convert(SourceEncoding, System.Text.Encoding.UTF8, buff);
+				fs = new FileStream(filepath, FileMode.Truncate);
+				fs.Write(u8, 0, u8.Length);
+				fs.Dispose();
+				GC.Collect();
+			}
+		}
+
         public void OpenDocument(string file) {
             if (this.ExistingDocument(file)) {
                 this.ShowDocument(file);
@@ -102,12 +123,12 @@ namespace DSTEd.Core {
             Document.Editor type = Document.Editor.CODE;
 
             switch (Path.GetExtension(file)) {
-                case ".tex":
+                case ".tex"://read KTEX CC4?
                     type = Document.Editor.TEXTURE;
                     break;
             }
 
-            if (file.EndsWith("modinfo.lua")) {
+            if (Path.GetFileName(path) == "modinfo.lua") {
                 type = Document.Editor.MODINFO;
             }
 
