@@ -34,12 +34,14 @@ namespace DSTEd.Core.IO
         {
             return zipfile.GetEntry(FullName).Open();
         }
-        public void WriteFileIntoZip(System.IO.Stream Istream, string FullName)
+        public void WriteFileIntoZip(System.IO.Stream FileStream, string FullName)
         {
             var entry = zipfile.CreateEntry(FullName);
             using (var writeoperator = new System.IO.StreamWriter(entry.Open()))
             {
-                writeoperator.Write(Istream);
+				byte[] buff = { 0 };
+				FileStream.Read(buff, 0, (int)FileStream.Length);
+                writeoperator.Write(buff);
             }
         }
     }
