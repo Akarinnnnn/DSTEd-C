@@ -114,7 +114,7 @@ namespace DSTEd.Core {
 			}
 		}
 
-        public void OpenDocument(string file) {
+		public void OpenDocument(string file) {
             if (this.ExistingDocument(file)) {
                 this.ShowDocument(file);
                 return;
