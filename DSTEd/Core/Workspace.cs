@@ -128,7 +128,7 @@ namespace DSTEd.Core {
                     break;
             }
 
-            if (Path.GetFileName(path) == "modinfo.lua") {
+            if (Path.GetFileName(file) == "modinfo.lua") {
                 type = Document.Editor.MODINFO;
             }
 
