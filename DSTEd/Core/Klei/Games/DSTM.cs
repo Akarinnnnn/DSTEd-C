@@ -22,16 +22,16 @@
 			* scml "input scml" "output zip"
 			* 
             * @ToDo add scripts with specific arguments/parameters (see these secripts, check their help files & arguments)
-            * compiler_scripts/image_build.py
+            * compiler_scripts/image_build.py   //image_build.py "image_path"
             * compiler_scripts/properties.py
             * compiler_scripts/properties.pyc
-            * compiler_scripts/zipanim.py
+            * compiler_scripts/zipanim.py       //zipanim.py "scml output temp dir" "output temp zip"
             * 
             * mod_tools/export.py
             * mod_tools/ExportOptions.py
-            * mod_tools/ResizeInfo.py
+            * mod_tools/ResizeInfo.py           //export.py --skip_update_prefabs --outputdir "output anim folder dir" --prefabsdir "temp zip file dir(from zipanim.py)"
             * mod_tools/validate.py
-            * 
+            *
             * scripts/ds_to_spriter.py
             * scripts/resize.py
             * 
