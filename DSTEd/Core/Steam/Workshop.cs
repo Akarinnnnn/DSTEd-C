@@ -140,4 +140,74 @@ namespace DSTEd.Core.Steam {
             });
         }
     }
+
+	public class Workshop_RS
+	{
+		public static CSteamID CurrentUserSteamID { get => SteamUser.GetSteamID(); }
+		public uint StartIndex = 0;
+		protected CallResult<RemoteStorageEnumerateWorkshopFilesResult_t> querycallback;
+
+		Workshop_RS()
+		{
+			while (!SteamAPI.Init()) return;
+
+		}
+		public async Task<PublishedFileId_t[]> QueryPublicModsAsync(uint count,List<string> Tags,List<string> UserTags)
+		{
+			PublishedFileId_t[] ret = null;
+			StartIndex += count;
+			var handle = SteamRemoteStorage.EnumeratePublishedWorkshopFiles(
+				EWorkshopEnumerationType.k_EWorkshopEnumerationTypeRecent,
+				StartIndex,
+				count,
+				0,
+				Tags,
+				UserTags
+				);
+			querycallback = CallResult<RemoteStorageEnumerateWorkshopFilesResult_t>.Create(
+				(RemoteStorageEnumerateWorkshopFilesResult_t r, bool fail) =>
+				{
+					if(!fail)
+						ret = r.m_rgPublishedFileId;
+				}
+			);
+			querycallback.Set(handle);
+			await Task.Run(new Action(
+				() =>
+				{
+					SteamAPI.RunCallbacks();
+					while (ret == null)
+						Thread.Sleep(300);
+				})
+				);
+			return ret;
+		}
+		public PublishedFileId_t[] QueryPublicMods(uint count, List<string> Tags, List<string> UserTags)
+		{
+			PublishedFileId_t[] ret = null;
+			StartIndex += count;
+			var handle = SteamRemoteStorage.EnumeratePublishedWorkshopFiles(
+				EWorkshopEnumerationType.k_EWorkshopEnumerationTypeRecent,
+				StartIndex,
+				count,
+				0,
+				Tags,
+				UserTags
+				);
+			querycallback = CallResult<RemoteStorageEnumerateWorkshopFilesResult_t>.Create(
+				(RemoteStorageEnumerateWorkshopFilesResult_t r, bool fail) =>
+				{
+					if (!fail)
+						ret = r.m_rgPublishedFileId;
+				}
+			);
+			querycallback.Set(handle);
+			SteamAPI.RunCallbacks();
+			while (ret == null)
+				Thread.Sleep(300);
+			return ret;
+		}
+
+		
+	}
 }
