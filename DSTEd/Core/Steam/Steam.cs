@@ -10,6 +10,7 @@ namespace DSTEd.Core.Steam {
         private SteamAppsManager software = null;
         private Account account = null;
         private Workshop workshop = null;
+		private Workshop_RS workshop_rs = null;
         private string path = null;
         private List<KleiGame> games = new List<KleiGame>();
 
@@ -17,6 +18,7 @@ namespace DSTEd.Core.Steam {
             this.software = new SteamAppsManager();
             this.account = new Account(this);
             this.workshop = new Workshop();
+			
         }
 
         public void LoadGame(KleiGame game) {

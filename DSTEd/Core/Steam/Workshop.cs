@@ -13,35 +13,41 @@ namespace DSTEd.Core.Steam {
         private string description = null;
         private string url = null;
 
-        public WorkshopItem(SteamUGCDetails_t details) {
-            //details.m_bAcceptedForUse;
-            //details.m_bBanned;
-            //details.m_bTagsTruncated;
-            //details.m_eFileType;
-            //details.m_eResult;
-            //details.m_eVisibility;
-            //details.m_flScore;
-            //details.m_hFile;
-            //details.m_hPreviewFile;
-            //details.m_nConsumerAppID;
-            //details.m_nCreatorAppID;
-            //details.m_nFileSize;
-            //details.m_nPreviewFileSize;
-            //details.m_nPublishedFileId;
-            //details.m_pchFileName;
-            this.description = details.m_rgchDescription;
-            //details.m_rgchTags;
-            this.title = details.m_rgchTitle;
-            this.url = details.m_rgchURL;
-            //details.m_rtimeAddedToUserList;
-            //details.m_rtimeCreated;
-            //details.m_rtimeUpdated;
-            //details.m_ulSteamIDOwner;
-            //details.m_unNumChildren;
-            //details.m_unVotesDown;
-            //details.m_unVotesUp;
-        }
+		public WorkshopItem(PublishedFileId_t RsQueryResult)
+		{
+			var handle = SteamRemoteStorage.GetPublishedFileDetails(RsQueryResult, 0);
 
+		}
+
+		public WorkshopItem(SteamUGCDetails_t details) {
+			//details.m_bAcceptedForUse;
+			//details.m_bBanned;
+			//details.m_bTagsTruncated;
+			//details.m_eFileType;
+			//details.m_eResult;
+			//details.m_eVisibility;
+			//details.m_flScore;
+			//details.m_hFile;
+			//details.m_hPreviewFile;
+			//details.m_nConsumerAppID;
+			//details.m_nCreatorAppID;
+			//details.m_nFileSize;
+			//details.m_nPreviewFileSize;
+			//details.m_nPublishedFileId;
+			//details.m_pchFileName;
+			this.description = details.m_rgchDescription;
+			//details.m_rgchTags;
+			this.title = details.m_rgchTitle;
+			this.url = details.m_rgchURL;
+			//details.m_rtimeAddedToUserList;
+			//details.m_rtimeCreated;
+			//details.m_rtimeUpdated;
+			//details.m_ulSteamIDOwner;
+			//details.m_unNumChildren;
+			//details.m_unVotesDown;
+			//details.m_unVotesUp;
+		}
+		
         public new string ToString() {
             return string.Format("[WorkshopItem Title=\"{0}\" URL=\"{1}\" Description=\"{2}\"]", this.title, this.url, this.description);
         }
@@ -147,10 +153,10 @@ namespace DSTEd.Core.Steam {
 		public uint StartIndex = 0;
 		protected CallResult<RemoteStorageEnumerateWorkshopFilesResult_t> querycallback;
 
-		Workshop_RS()
+		public Workshop_RS()
 		{
 			while (!SteamAPI.Init()) return;
-
+			querycallback = new CallResult<RemoteStorageEnumerateWorkshopFilesResult_t>();
 		}
 		public async Task<PublishedFileId_t[]> QueryPublicModsAsync(uint count,List<string> Tags,List<string> UserTags)
 		{
@@ -168,7 +174,12 @@ namespace DSTEd.Core.Steam {
 				(RemoteStorageEnumerateWorkshopFilesResult_t r, bool fail) =>
 				{
 					if(!fail)
-						ret = r.m_rgPublishedFileId;
+					{
+						if (r.m_eResult == EResult.k_EResultOK)
+						{
+							ret = r.m_rgPublishedFileId;
+						}
+					}
 				}
 			);
 			querycallback.Set(handle);
@@ -198,7 +209,12 @@ namespace DSTEd.Core.Steam {
 				(RemoteStorageEnumerateWorkshopFilesResult_t r, bool fail) =>
 				{
 					if (!fail)
-						ret = r.m_rgPublishedFileId;
+					{
+						if (r.m_eResult == EResult.k_EResultOK)
+						{
+							ret = r.m_rgPublishedFileId;
+						}
+					}
 				}
 			);
 			querycallback.Set(handle);
