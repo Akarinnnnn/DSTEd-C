@@ -22,7 +22,7 @@ namespace DSTEd.Core
 			System.Text.StringBuilder tmp = new System.Text.StringBuilder();
 			uint i = 0;
 			foreach (string name in commands.Keys)
-				if(name.StartsWith(args != null?args[0]:string.Empty))
+				if(name.StartsWith(args == null?args[0]:string.Empty))
 				{
 					tmp.AppendLine(name);
 					i++;
@@ -51,7 +51,7 @@ namespace DSTEd.Core
 		public string Execute(string command)
 		{
 			string[] cmd = command.Split(' ');
-			string[] arg = null;
+			string[] arg = {};
 			if(cmd.Length>=2)
 			{
 				arg = new string[cmd.Length - 1];

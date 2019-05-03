@@ -12,11 +12,40 @@ namespace DSTEd.Core.Steam {
         private string title = null;
         private string description = null;
         private string url = null;
+		ulong ownerID;
 
-		public WorkshopItem(PublishedFileId_t RsQueryResult)
+		/*public WorkshopItem(PublishedFileId_t FileID)
 		{
-			var handle = SteamRemoteStorage.GetPublishedFileDetails(RsQueryResult, 0);
+			var handle = SteamRemoteStorage.GetPublishedFileDetails(FileID, 0);
+			bool fail = false;
+			CallResult<RemoteStorageGetPublishedFileDetailsResult_t> callResult = new CallResult<RemoteStorageGetPublishedFileDetailsResult_t>(call_result_fn);
+			callResult.Set(handle);
+			SteamAPI.RunCallbacks();
+			while (SteamUtils.IsAPICallCompleted(handle, out fail))
+				if (fail)
+					return;
+				else
+					Thread.Sleep(50);
+		}
 
+		private void call_result_fn(RemoteStorageGetPublishedFileDetailsResult_t r, bool fail)
+		{
+			if (!fail && r.m_eResult == EResult.k_EResultOK)
+			{
+				title = r.m_rgchTitle;
+				description = r.m_rgchDescription;
+				url = r.m_rgchURL;
+				ownerID = r.m_ulSteamIDOwner;
+			}
+		}*/
+
+		public WorkshopItem(PublishedFileId_t FileID)
+		{
+			var result = SteamWorkshopHelper.RemoteStorageHelper.GetDetails(FileID);
+			title = result.m_rgchTitle;
+			url = result.m_rgchURL;
+			description = result.m_rgchDescription;
+			ownerID = result.m_ulSteamIDOwner;
 		}
 
 		public WorkshopItem(SteamUGCDetails_t details) {
@@ -157,7 +186,32 @@ namespace DSTEd.Core.Steam {
 		{
 			while (!SteamAPI.Init()) return;
 			querycallback = new CallResult<RemoteStorageEnumerateWorkshopFilesResult_t>();
+			Boot.Instance.DBGCLI.AddCommand("steam_workshoprs_query", dbgquery);
+			Boot.Instance.DBGCLI.AddCommand("steam_workshoprs_getdetails", dbggetdetails);
 		}
+		private string dbggetdetails(params string[] args)
+		{
+			if (args[0] == null)
+				return "Please input FileID";
+			else
+				return new WorkshopItem(new PublishedFileId_t(ulong.Parse(args[0]))).ToString();
+		}
+		private string dbgquery(params string[] args)
+		{
+			uint count;
+			if (args.Length > 0)
+				count = args[0] != null ? uint.Parse(args[0]) : 10;
+			else
+				count = 10;
+			var result = QueryPublicMods(count, new List<string>(), new List<string>());
+			System.Text.StringBuilder ret = new System.Text.StringBuilder("ID returned:\n");
+			foreach (var id in result)
+			{
+				ret.AppendLine(id.ToString());
+			}
+			return ret.ToString();
+		}
+
 		public async Task<PublishedFileId_t[]> QueryPublicModsAsync(uint count,List<string> Tags,List<string> UserTags)
 		{
 			PublishedFileId_t[] ret = null;
@@ -223,7 +277,5 @@ namespace DSTEd.Core.Steam {
 				Thread.Sleep(300);
 			return ret;
 		}
-
-		
 	}
 }

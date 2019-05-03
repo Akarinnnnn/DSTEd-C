@@ -14,11 +14,12 @@ namespace DSTEd.Core.Steam {
         private string path = null;
         private List<KleiGame> games = new List<KleiGame>();
 
+
         public Steam() {
             this.software = new SteamAppsManager();
             this.account = new Account(this);
             this.workshop = new Workshop();
-			
+			Boot.Instance.DBGCLI.AddCommand("steam_enablersquery", enablersquery);
         }
 
         public void LoadGame(KleiGame game) {
@@ -117,5 +118,11 @@ namespace DSTEd.Core.Steam {
                 }
             }
         }
-    }
+
+		private string enablersquery(params string[] args)
+		{
+			workshop_rs = new Workshop_RS();
+			return "SteamRemoteStorage workshop API enabled.";
+		}
+	}
 }
