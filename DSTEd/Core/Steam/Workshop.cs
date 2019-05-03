@@ -16,7 +16,7 @@ namespace DSTEd.Core.Steam {
 		public WorkshopItem(PublishedFileId_t RsQueryResult)
 		{
 			var handle = SteamRemoteStorage.GetPublishedFileDetails(RsQueryResult, 0);
-
+			//TODO: Get information by managed way(maybe unsafe?)
 		}
 
 		public WorkshopItem(SteamUGCDetails_t details) {
