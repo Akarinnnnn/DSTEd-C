@@ -23,7 +23,7 @@
         <Rectangle Fill="#FFED5C2D" Grid.Row="1" />
         <Image Grid.Row="1" Grid.Column="1" Source="/DSTEd;component/Assets/Logo.png" Margin="10,0" />
         <Label Foreground="White" Grid.Row="1" Grid.Column="2" FontSize="36" FontWeight="Bold" Padding="0">DSTEd</Label>
-        <ProgressBar x:Name="progress" Grid.Row="3" Grid.ColumnSpan="3" Panel.ZIndex="4" Background="#FF4C4C4F" BorderBrush="{x:Null}" Foreground="#FFED5C2D" Value="-1" BorderThickness="0" Margin="10,0"  />
+        <ProgressBar x:Name="progress" Grid.Row="3" Grid.ColumnSpan="3" Panel.ZIndex="4" Background="#FF4C4C4F" BorderBrush="{x:Null}" Foreground="#FFED5C2D" Value="0" BorderThickness="0" Margin="10,0"  />
         <Grid Grid.Row="4" Grid.ColumnSpan="3" Margin="10,11,10,10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />

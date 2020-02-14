@@ -29,18 +29,34 @@ namespace DSTEd.UI {
 
         public void Init()//INIT not runs in main thread now.
 		{
-            string path = Boot.Core.Steam.GetGame().GetPath();
-			Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action( ()=>
-			{
-				this.workspace_mods.Content = new WorkspaceTree(new FileSystem(path + "\\" + "mods"), delegate (FileNode file)
-				{
-					return new WorkshopItem(file);
-				});
+            var game = Boot.Core.Steam.GetGame();
+            while(game == null)
+            {
+                System.Threading.Thread.Sleep(100);
+                game = Boot.Core.Steam.GetGame();
+            }
+            //string path = game.GetPath();
 
-				this.workspace_core.Content = new WorkspaceTree(new FileSystem(path + "\\" + "data"), null);
-			})
-			);
-			menu.Init();
+            #region DeprecatedContentInitialize
+            /*Dispatcher.Invoke(DispatcherPriority.Normal, new Action( ()=>
+                {
+                    this.workspace_mods.Content = new WorkspaceTree(new FileSystem(path + "\\" + "mods"), delegate (FileNode file)
+                    {
+                        return new WorkshopItem(file);
+                    });
+
+                    this.workspace_core.Content = new WorkspaceTree(new FileSystem(path + "\\" + "data"), null);
+                })
+                );*/
+            #endregion
+
+            menu.Init();
+        }
+
+        internal void SetWorkapaceContents(WorkspaceTree mods,WorkspaceTree core)
+        {
+            workspace_core.Dispatcher.Invoke(() => workspace_core.Content = core);
+            workspace_mods.Dispatcher.Invoke(() => workspace_mods.Content = mods);
         }
 
         public System.Windows.Controls.MenuItem GetTools() {

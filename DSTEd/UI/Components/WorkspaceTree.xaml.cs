@@ -27,7 +27,7 @@ namespace DSTEd.UI.Components {
 			{
 				foreach (FileNode directory in f)
 				{
-					Dispatcher.Invoke(() => RenderV2(directory, tree), System.Windows.Threading.DispatcherPriority.Render);
+					Dispatcher.Invoke(() => RenderV2(directory, tree), System.Windows.Threading.DispatcherPriority.Normal);
 				}
 			});
 		}

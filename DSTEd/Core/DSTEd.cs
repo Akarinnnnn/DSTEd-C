@@ -89,12 +89,8 @@ namespace DSTEd.Core {
 				Steam.LoadGame(new DSTM());//MT
 				Steam.LoadGame(new DSTS());//SV
 				LUA = new LUA.LUA();
-				IDE.Init();
 			}
-			void modsloading()
-			{
-				//do nothing now
-			}
+
 			void workshoploading()
 			{
 				Steam.GetWorkShop().GetPublishedMods(322330, delegate (WorkshopItem[] items) {
@@ -106,10 +102,34 @@ namespace DSTEd.Core {
 					}
 				});
 			}
+
+			//void initIDE()
+
+
 			#endregion
-			Action[] q2 = { gameloading, modsloading, workshoploading };
-			loaderv2.Start(q2);
-			IDE.Show();
+			Action[] workers1 = { gameloading, workshoploading};
+			//Action[] workers2 = { initIDE };
+
+			loaderv2.Start(workers1);
+
+			{
+				IDE.Init();
+
+				string path = Steam.GetGame().GetPath();
+				UI.Components.WorkspaceTree mods = new UI.Components.WorkspaceTree(new IO.FileSystem(path + "\\" + "mods"), delegate (IO.FileNode file)
+				{
+					return new UI.Components.WorkshopItem(file);
+				});
+				UI.Components.WorkspaceTree core = new UI.Components.WorkspaceTree(new IO.FileSystem(path + "\\" + "data"), null);
+
+				IDE.SetWorkapaceContents(mods, core);
+
+
+				Dispatcher.BeginInvoke((Action)(() => 
+					IDE.Show()),
+					System.Windows.Threading.DispatcherPriority.Loaded);
+			}
+
 			this.Run();
 		}
 
