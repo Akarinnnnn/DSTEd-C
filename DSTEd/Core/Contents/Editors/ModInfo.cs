@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -10,9 +11,11 @@ using DSTEd.Core.LUA;
  * https://forums.kleientertainment.com/forums/topic/36748-mod-api-updates-api-version-6-may-23-2014/?page=0&tab=comments#comment-486895
  */
 namespace DSTEd.Core.Contents.Editors {
-    class ModInfo : TabControl, DocumentHandler {
+    class ModInfo : TabControl, IDocumentHandler {
         private Document document;
-
+        private Code code_editor;
+        private Properties prop_editor;
+        private Properties opt_editor;
         public ModInfo(Document document) {
             this.document = document;
             this.TabStripPlacement = Dock.Bottom;
@@ -29,9 +32,24 @@ namespace DSTEd.Core.Contents.Editors {
 
         }
 
+        public StringBuilder Save()
+		{
+            if (!prop_editor.IsDisabled && !opt_editor.IsDisabled)
+            {
+                StringBuilder ret = new StringBuilder();
+                ret.Append(prop_editor.Save()).Append('\n')
+                    .Append(opt_editor.Save());
+                return ret;
+            }
+            else
+            {
+                return code_editor.Save();
+            }
+		}
+
         private void CreatePropertiesEditor() {
             Properties properties = new Properties(I18N.__("ModInfo Editor"), "ModInfo", I18N.__("With the ModInfo Editor of DSTEd you can easily edit the modinfo.lua of your mods. To do this, select the specified values of the individual properties to change the configuration of the mod."));
-
+            prop_editor = properties;
             // try {
             Klei.Data.ModInfo info = Boot.Core.LUA.GetModInfo(this.document.GetFileContent(), null, delegate (ParserException e) {
                 Logger.Info("[ModInfo Editor] " + e);
@@ -99,7 +117,7 @@ namespace DSTEd.Core.Contents.Editors {
 
         private void CreateOptionsEditor() {
             Properties properties = new Properties(I18N.__("Options Editor"), "ModOptions", I18N.__("Make settings for the mod in the Options Editor."));
-
+            opt_editor = properties;
             //try {
             Klei.Data.ModInfo info = Boot.Core.LUA.GetModInfo(this.document.GetFileContent(), null, delegate (ParserException e) {
                 Logger.Info("[ModInfo Editor] " + e);
@@ -178,7 +196,9 @@ namespace DSTEd.Core.Contents.Editors {
         private void CreateSourceEditor() {
             TabItem item = new TabItem();
             item.Header = I18N.__("Source");
-            item.Content = new Code(this.document);
+            code_editor = new Code(this.document);
+            item.Content = code_editor;
+
             this.AddChild(item);
         }
     }

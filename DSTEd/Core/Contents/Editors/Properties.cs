@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -39,7 +41,7 @@ namespace DSTEd.Core.Contents.Editors {
         }
     }
 
-    public class ComboboxItem {
+	public class ComboboxItem {
         public string Text {
             get; set;
         }
@@ -52,9 +54,11 @@ namespace DSTEd.Core.Contents.Editors {
         }
     }
 
-    class Properties : ScrollViewer, DocumentHandler {
+    class Properties : ScrollViewer, IDocumentHandler {
         private Grid container = null;
         private int row = 0;
+        public bool IsDisabled { get; private set; } = false;
+
         public enum Type {
             STRING,
             BOOLEAN,
@@ -69,6 +73,14 @@ namespace DSTEd.Core.Contents.Editors {
             ENTRIES,
             BUTTON
         };
+        
+        public StringBuilder Save()
+		{
+            if (IsDisabled)
+                throw new InvalidOperationException("Property editing is disabled. No data can save.");
+
+
+		}
 
         //for ProjectWizard
         public Properties()
@@ -107,7 +119,8 @@ namespace DSTEd.Core.Contents.Editors {
 
         }
 
-        public void Disabled(string message) {
+        public void DisablePropEdit(string message) {
+            IsDisabled = true;
             this.container.RowDefinitions.Add(new RowDefinition());
 
             Grid disabled = new Grid();
@@ -195,7 +208,7 @@ namespace DSTEd.Core.Contents.Editors {
             category.Margin = new Thickness(10, 15, 10, 10);
             category.FontWeight = FontWeights.Bold;
 
-            if (name.Length >= 1) {
+            if (name.Length != 0) {
                 category.Content = name;
             }
 

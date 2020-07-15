@@ -8,8 +8,9 @@ using System.Windows.Threading;
 using DSTEd.UI.Contents;
 
 namespace DSTEd.Core {
-    public interface DocumentHandler {
+    public interface IDocumentHandler {
         void OnInit();
+        StringBuilder Save();
     }
 
     public class Document {
@@ -27,10 +28,10 @@ namespace DSTEd.Core {
         }
 
         private string title = null;
-        private string file = null;
+        private string filename = null;
         private Action<Document, State> callback_changed = null;
         private Editor type = Editor.NONE;
-        private object content = null;
+        private IDocumentHandler content = null;
         private string file_content = null;
         private Boolean is_closeable = true;
         private Boolean is_content_created = false;
@@ -43,8 +44,8 @@ namespace DSTEd.Core {
             Task.Run(() => {
                 do {
                     if(this.is_content_created && this.is_content_loaded && this.is_inited) {
-                        if (this.content != null && typeof(DocumentHandler).IsAssignableFrom(this.content.GetType())) {
-                            ((DocumentHandler) this.content).OnInit();
+                        if (this.content != null && typeof(IDocumentHandler).IsAssignableFrom(this.content.GetType())) {
+                            ((IDocumentHandler) this.content).OnInit();
                         }
 
                         break;
@@ -56,7 +57,7 @@ namespace DSTEd.Core {
         }
 
         public string GetHash() {
-            return Encoding.UTF8.GetString(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(string.Format("{0}-{1}", this.GetTitle(), this.GetFile()))));
+            return Encoding.UTF8.GetString(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(string.Format("{0}-{1}", this.GetTitle(), this.GetFilename()))));
         }
 
         public Boolean IsCloseable() {
@@ -81,11 +82,11 @@ namespace DSTEd.Core {
 
         public void Load(string file) {
             this.SetTitle(Path.GetFileName(file));
-            this.file = file;
+            this.filename = file;
 
             Application.Current.Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate () {
                 try {
-                    using (StreamReader reader = new StreamReader(this.GetFile(), Encoding.UTF8)) {
+                    using (StreamReader reader = new StreamReader(this.GetFilename(), Encoding.UTF8)) {
                         this.file_content = reader.ReadToEnd();
                         this.is_content_loaded = true;
                     }
@@ -100,15 +101,15 @@ namespace DSTEd.Core {
                 return this.title;
             }
 
-            return this.GetFile(); // Hashing(?)
+            return this.GetFilename(); // Hashing(?) //no, used in code saving
         }
 
         public string GetFileContent() {
             return this.file_content;
         }
 
-        public string GetFile() {
-            return this.file;
+        public string GetFilename() {
+            return this.filename;
         }
 
         public void Init() {
@@ -135,18 +136,9 @@ namespace DSTEd.Core {
 
 		public void SaveDocument()
 		{
-			Logger.Info("Saving file, path:", file);
+			Logger.Info("Saving file, path:", filename);
             
-            if(content is Contents.Editors.Code ce)
-            {
-                file_content = ce.Text;
-            }
-
-			using (var wop = new FileStream(file,FileMode.Truncate))
-			{
-				byte[] buff = Encoding.UTF8.GetBytes(file_content);
-				wop.Write(buff, 0, buff.Length);
-			}
+            
 		}
 
         internal object GetContent() {

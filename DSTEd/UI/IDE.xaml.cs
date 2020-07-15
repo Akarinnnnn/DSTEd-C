@@ -17,8 +17,8 @@ using System.Windows.Media;
 namespace DSTEd.UI {
     public partial class IDE : Window {
         private Menu menu                           = null;
-        private static string CHANGED_CHARACTER     = "*";
-        private AvalonDocument lastactivedocument   = null;
+        private const string CHANGED_CHARACTER     = "*"; // like final static in Java
+        private AvalonDocument last_activedocument   = null;
 
         public IDE() {
             InitializeComponent();
@@ -201,7 +201,7 @@ namespace DSTEd.UI {
 
                     if(doc.GetDocument().Equals(document)){
                         doc.IsActive        = true;
-                        lastactivedocument  = doc;
+                        last_activedocument  = doc;
                         return;
                     }
 
@@ -209,9 +209,11 @@ namespace DSTEd.UI {
                 }
             }
 
-            var newdoc          = new AvalonDocument(document);
-            newdoc.IsActive     = true;
-            lastactivedocument  = newdoc;
+			var newdoc = new AvalonDocument(document)
+			{
+				IsActive = true
+			};
+			last_activedocument  = newdoc;
             editors.Children.Add(newdoc);
         }
 
@@ -249,7 +251,7 @@ namespace DSTEd.UI {
 		}
 
         public AvalonDocument GetActiveDocument() {
-            return lastactivedocument;
+            return last_activedocument;
 		}
 
         internal void OnChanged(Document document, Document.State state) {

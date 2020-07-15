@@ -13,7 +13,7 @@ using DSTEd.UI.Components;
  * http://dontstarveapi.com/tutorials/mod-files-and-structure/modicon-xml/
  */
 namespace DSTEd.Core.Contents.Editors {
-    public class TEX : Container, DocumentHandler {
+    public class TEX : Container, IDocumentHandler {
         private Document document = null;
         private Canvas canvas = null;
 
@@ -69,7 +69,7 @@ namespace DSTEd.Core.Contents.Editors {
 
         public void Load() {
             try {
-                KTEX texture = new KTEX(File.OpenRead(this.document.GetFile()));
+                KTEX texture = new KTEX(File.OpenRead(this.document.GetFilename()));
                 if (!texture.IsValid()) {
                     this.CreateLabel(I18N.__("Texture is Invalid."));
                 } else {

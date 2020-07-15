@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Xml;
@@ -15,7 +16,7 @@ using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using MoonSharp.Interpreter.Tree;
 
 namespace DSTEd.Core.Contents.Editors {
-    class Code : TextEditor, DocumentHandler {
+    class Code : TextEditor, IDocumentHandler {
         private Document document;
 		private CompletionWindow completion;
 		private Configuration config = Configuration.getConfiguration();
@@ -23,7 +24,7 @@ namespace DSTEd.Core.Contents.Editors {
 		private List<FunctionCompleteion> funclist = new List<FunctionCompleteion>();
 		private List<VariableCompletion> varlist = new List<VariableCompletion>();
 
-		private Lexer lexer;//lexical analyzer, for autocompleteion. from modified moonsharp classlibrary
+		private Lexer lexer;//lexical analyzer, for autocompleteion. which is from modified moonsharp classlibrary
 
 		public Code(Document document) {
             this.document = document;
@@ -39,7 +40,7 @@ namespace DSTEd.Core.Contents.Editors {
 			this.Options = options;
 
 
-			this.SyntaxHighlighting = LoadSyntax(Path.GetExtension(this.document.GetFile()));
+			this.SyntaxHighlighting = LoadSyntax(Path.GetExtension(this.document.GetFilename()));
             this.Text = document.GetFileContent();
             this.Document.UpdateFinished += new EventHandler(OnChange);
             this.TextArea.TextEntering += OnEnter;
@@ -74,7 +75,7 @@ namespace DSTEd.Core.Contents.Editors {
         public void OnInit()
 		{
 			//init lexical analyzer
-			switch(Path.GetExtension(this.document.GetFile()))
+			switch(Path.GetExtension(this.document.GetFilename()))
 			{
 				case "lua":
 					RefreshLexer();
@@ -84,7 +85,7 @@ namespace DSTEd.Core.Contents.Editors {
 
 		public void RefreshLexer()
 		{
-			if(Path.GetExtension(document.GetFile()).CompareTo(".xml") == 0)
+			if(Path.GetExtension(document.GetFilename()).CompareTo(".xml") == 0)
 			{
 				return;
 			}
@@ -227,5 +228,10 @@ namespace DSTEd.Core.Contents.Editors {
 				};
             }*/
 			}
+
+		public StringBuilder Save()
+		{
+			return new StringBuilder(Text);
 		}
+	}
 }

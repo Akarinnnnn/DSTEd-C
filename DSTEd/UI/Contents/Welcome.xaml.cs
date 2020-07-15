@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Windows.Controls;
 using DSTEd.Core;
 using DSTEd.UI.Components;
+using ICSharpCode.AvalonEdit.Document;
 
 namespace DSTEd.UI.Contents {
-    public partial class Welcome : UserControl {
+    public partial class Welcome : UserControl, IDocumentHandler{
         private Document document;
 
         public Welcome(Document document) {
@@ -20,7 +21,17 @@ namespace DSTEd.UI.Contents {
             });
         }
 
-        private void AddNewsEntry(SteamKit2.KeyValue news) {
+		public void OnInit()
+		{
+			//do nothing
+		}
+
+		public void Save()
+		{
+			//do nothing
+		}
+
+		private void AddNewsEntry(SteamKit2.KeyValue news) {
             News entry = new News();
             entry.title.Text = news["title"].AsString();
 

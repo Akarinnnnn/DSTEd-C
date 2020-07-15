@@ -28,7 +28,7 @@ namespace DSTEd.Core {
             //this.window.Close(ignore_callback);
         }
 
-        public void OnClose(Action<CancelEventArgs> callback) {
+        public void OnClose() {
             //this.window.OnClose(callback);
         }
 
@@ -84,7 +84,7 @@ namespace DSTEd.Core {
             Document existing = null;
 
             foreach (KeyValuePair<string, Document> entry in this.documents) {
-                if (entry.Key == path || entry.Value.GetFile() == path) {
+                if (entry.Key == path || entry.Value.GetFilename() == path) {
                     existing = entry.Value;
                     break;
                 }
@@ -119,7 +119,7 @@ namespace DSTEd.Core {
 
         internal void ShowDocument(string file) {
             foreach (KeyValuePair<string, Document> entry in this.documents) {
-                if (/*entry.Key == file || /*Hashed */entry.Value.GetFile() == file) {
+                if (/*entry.Key == file || /*Hashed */entry.Value.GetFilename() == file) {
                     // @ToDo check content if its newer and ask for reloading...
                     Boot.Core.IDE.SetActiveDocument(entry.Value);
                 }
@@ -130,7 +130,7 @@ namespace DSTEd.Core {
             //Boolean existing = false;
 
             foreach (KeyValuePair<string, Document> entry in this.documents) {
-                if (entry.Key == file/*hashed key,remove?*/ || entry.Value.GetFile() == file) {
+                if (entry.Key == file/*hashed key,remove?*/ || entry.Value.GetFilename() == file) {
                     //existing = true;
                     return true;
                     //break;
