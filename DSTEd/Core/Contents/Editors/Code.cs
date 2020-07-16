@@ -229,9 +229,9 @@ namespace DSTEd.Core.Contents.Editors {
             }*/
 			}
 
-		public StringBuilder Save()
+		public void Save()
 		{
-			return new StringBuilder(Text);
+			File.WriteAllText(Document.FileName, Text);
 		}
 	}
 }

@@ -10,7 +10,7 @@ using DSTEd.UI.Contents;
 namespace DSTEd.Core {
     public interface IDocumentHandler {
         void OnInit();
-        StringBuilder Save();
+        void Save();
     }
 
     public class Document {

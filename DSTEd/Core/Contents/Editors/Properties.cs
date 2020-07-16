@@ -41,7 +41,7 @@ namespace DSTEd.Core.Contents.Editors {
         }
     }
 
-	public class ComboboxItem {
+    public class ComboboxItem {
         public string Text {
             get; set;
         }
@@ -54,9 +54,15 @@ namespace DSTEd.Core.Contents.Editors {
         }
     }
 
-    class Properties : ScrollViewer, IDocumentHandler {
+    /// <summary>
+    /// Check DSTEd.Core.Contents.Editors.PropertyBags to find predefined editor
+    /// Or extend this class to create your Property bags editor
+    /// </summary>
+    abstract class Properties : ScrollViewer, IDocumentHandler 
+    {
         private Grid container = null;
         private int row = 0;
+        protected Dictionary<string,Property> categories;
         public bool IsDisabled { get; private set; } = false;
 
         public enum Type {
@@ -73,14 +79,23 @@ namespace DSTEd.Core.Contents.Editors {
             ENTRIES,
             BUTTON
         };
-        
-        public StringBuilder Save()
+
+		protected class Property
 		{
+            public Type DataType;
+        }
+        protected class Property<T> : Property
+		{
+            public T Data;
+		}
+
+        public void CheckSaveable()
+        {
             if (IsDisabled)
                 throw new InvalidOperationException("Property editing is disabled. No data can save.");
+        }
 
-
-		}
+        public abstract void Save();
 
         //for ProjectWizard
         public Properties()
@@ -198,7 +213,7 @@ namespace DSTEd.Core.Contents.Editors {
             this.container.Children.Add(header);
         }
 
-        public void AddCategory(string name) {
+        protected void AddCategory(string name) {
             this.container.RowDefinitions.Add(new RowDefinition());
             Label category = new Label();
             category.Foreground = new SolidColorBrush(Color.FromRgb(237, 92, 45));
@@ -218,7 +233,7 @@ namespace DSTEd.Core.Contents.Editors {
             this.container.Children.Add(category);
         }
 
-        public void AddButton(string name, string text, object data) {
+        protected void AddButton(string name, string text, object data) {
             this.container.RowDefinitions.Add(new RowDefinition());
 
             Button button = new Button();
@@ -238,7 +253,7 @@ namespace DSTEd.Core.Contents.Editors {
             ++row;
         }
 
-        public void AddEntry(string name, string text, Type type, object value) {
+        protected void AddEntry(string name, string text, Type type, object value) {
             this.container.RowDefinitions.Add(new RowDefinition());
 
             // Label
@@ -256,7 +271,8 @@ namespace DSTEd.Core.Contents.Editors {
                     this.AddInput(name, (string) value);
                     break;
                 case Type.BOOLEAN:
-                    this.AddBoolean(name, (Boolean) value, I18N.__("True"), I18N.__("False"));
+                    // the text should be same as the Lua keyword
+                    this.AddBoolean(name, (Boolean) value, "true", "false");
                     break;
                 case Type.TEXT:
                     this.AddText(name, (string) value);

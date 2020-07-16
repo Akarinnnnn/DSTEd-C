@@ -4,6 +4,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using DSTEd.Core.Contents.Editors.PropertyBags;
 using DSTEd.Core.Klei.Data;
 using DSTEd.Core.LUA;
 
@@ -36,24 +37,24 @@ namespace DSTEd.Core.Contents.Editors {
 		{
             if (!prop_editor.IsDisabled && !opt_editor.IsDisabled)
             {
-                StringBuilder ret = new StringBuilder();
-                ret.Append(prop_editor.Save()).Append('\n')
-                    .Append(opt_editor.Save());
-                return ret;
             }
             else
             {
-                return code_editor.Save();
             }
 		}
 
         private void CreatePropertiesEditor() {
-            Properties properties = new Properties(I18N.__("ModInfo Editor"), "ModInfo", I18N.__("With the ModInfo Editor of DSTEd you can easily edit the modinfo.lua of your mods. To do this, select the specified values of the individual properties to change the configuration of the mod."));
-            prop_editor = properties;
+            
             // try {
             Klei.Data.ModInfo info = Boot.Core.LUA.GetModInfo(this.document.GetFileContent(), null, delegate (ParserException e) {
                 Logger.Info("[ModInfo Editor] " + e);
             });
+
+            prop_editor = new ModBasicInfo(I18N.__("ModInfo Editor"),
+                "ModInfo",
+                I18N.__("With the ModInfo Editor of DSTEd you can easily edit the modinfo.lua of your mods. To do this, select the specified values of the individual properties to change the configuration of the mod."),
+                document,
+                info);
 
             if (info.IsBroken()) {
                 return;
